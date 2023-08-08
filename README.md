@@ -1,12 +1,4 @@
-🌠 Super Ping Pong
-
-  _________                                  .__                                               
- /   _____/__ ________   ___________  ______ |__| ____    ____   ______   ____   ____    ____  
- \_____  \|  |  \____ \_/ __ \_  __ \ \____ \|  |/    \  / ___\  \____ \ /  _ \ /    \  / ___\ 
- /        \  |  /  |_> >  ___/|  | \/ |  |_> >  |   |  \/ /_/  > |  |_> >  <_> )   |  \/ /_/  >
-/_______  /____/|   __/ \___  >__|    |   __/|__|___|  /\___  /  |   __/ \____/|___|  /\___  / 
-        \/      |__|        \/        |__|           \//_____/   |__|               \//_____/  
-                                                                                                                                       
+# 🌠 Super Ping Pong
 
 Dive into the realm of Super Ping Pong - not just your ordinary ping pong game. This version brings with it the superpower of spells, adding an unexpected twist to every match you play!
 
