@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Windows;
 
 public class BallTrajectory : MonoBehaviour
 {
     
 
-    [SerializeField] private int _maxPhysicsFrameIterations = 100;
+    [SerializeField] private int _maxPhysicsFrameIterations = 25;
     [SerializeField] private Transform _tableTransform;
     [SerializeField] private GameObject trajectory_Ball;
 
@@ -18,12 +19,16 @@ public class BallTrajectory : MonoBehaviour
     private PhysicsScene _physicsScene;
     private GameObject ghostBall;
     private PlayerActions playerActions;
+    private PlayerMovement playerMovement;
+    private PlayerInput playerInput;
     private Transform servePoint;
 
     void Start()
     {
         trajectoryLine=GetComponent<LineRenderer>();
         playerActions=GetComponent<PlayerActions>();
+        playerMovement = GetComponent<PlayerMovement>();
+        playerInput = GetComponent<PlayerInput>();
         servePoint = playerActions.servePoint;
         CreatePhysicsScene();
     }
@@ -40,6 +45,10 @@ public class BallTrajectory : MonoBehaviour
 
     public void SimulateTrajectory()
     {
+        if (playerInput.horizontalInput!=0) {
+            playerMovement.yAngle += Time.deltaTime * playerInput.horizontalInput*15f;
+        }
+
         if (ghostBall == null)
         {
             ghostBall = Instantiate(trajectory_Ball, servePoint.position, servePoint.rotation);

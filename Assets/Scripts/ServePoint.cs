@@ -17,7 +17,7 @@ public class ServePoint : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = new Vector3(playerTransform.position.x, startingPosition.y, startingPosition.z);
+        transform.position = new Vector3(playerTransform.position.x, startingPosition.y, playerTransform.position.z+10f);
 
     }
 }

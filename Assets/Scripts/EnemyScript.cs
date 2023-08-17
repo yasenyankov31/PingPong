@@ -7,6 +7,7 @@ public class EnemyScript : MonoBehaviour
 {
     public Transform servePoint;
     private AudioSource audioSource;
+    public float serveBackForce;
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -29,6 +30,6 @@ public class EnemyScript : MonoBehaviour
             rb.velocity = rb.velocity.normalized * 1;
         }
         audioSource.Play();
-        rb.AddForce(servePoint.forward * 1, ForceMode.Impulse);
+        rb.AddForce(servePoint.forward * serveBackForce, ForceMode.Impulse);
     }
 }

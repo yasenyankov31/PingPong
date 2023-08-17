@@ -1,25 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class BallScript : MonoBehaviour
 {
+
+
+
     public float forceMagnitude = 5f;
     public float paddleForce = 1f;
     public AudioClip[] tableHitSounds;
-    private Collider prevCollider;
+    public Collider prevCollider;
+    private Rigidbody rb;
 
     AudioSource audioSource;
     int audioClipElement = 0;
     int bounceCounter = 0;
 
+    [Header("Rewind")]
+    private bool isRewinding = false;
+    private List<(Vector3 position, Vector3 velocity)> ballRewindTrailInfo;
+
+
+
     private void Start()
     {
+        rb = GetComponent<Rigidbody>();
+        ballRewindTrailInfo = new List<(Vector3 position, Vector3 velocity)>();
         audioSource = GetComponent<AudioSource>();
     }
+    private void FixedUpdate()
+    {
+        if (isRewinding)
+        {
+            Rewind();
+        }
+        else
+        {
+            Record();
+        }
+    }
 
-    private void PlaySoundOnCollision() {
+    private void PlaySoundOnCollision()
+    {
         if (audioClipElement == tableHitSounds.Length)
         {
             audioClipElement = 0;
@@ -29,13 +55,14 @@ public class BallScript : MonoBehaviour
         audioClipElement++;
 
     }
-    private void ResetGame() {
+    private void ResetGame()
+    {
         if (prevCollider != null)
         {
             prevCollider.enabled = true;
         }
-        PlayerActions playerController = FindObjectOfType<PlayerActions>();
-        playerController.ResetServiceVariables();
+        PlayerActions playerActions = FindObjectOfType<PlayerActions>();
+        playerActions.ResetServiceVariables();
         Destroy(this.gameObject);
     }
 
@@ -55,22 +82,60 @@ public class BallScript : MonoBehaviour
             }
             prevCollider = collision.collider;
             collision.collider.enabled = false;
+            
         }
         if (collision.collider.CompareTag("Table"))
         {
-            if (bounceCounter > 1)
+            if (bounceCounter > 2)
             {
                 ResetGame();
             }
-            else {
+            else
+            {
                 PlaySoundOnCollision();
             }
-            
+
             bounceCounter++;
         }
 
 
     }
 
+    public void ResetRewindVariables()
+    {
+        ballRewindTrailInfo.Clear();
+    }
 
+    public void StartRewind()
+    {
+        prevCollider.enabled = true;
+        isRewinding = true;
+        rb.isKinematic = true;
+        bounceCounter = 0;
+    }
+
+    public void StopRewind()
+    {
+        rb.isKinematic = false;
+        isRewinding = false;
+        rb.velocity = ballRewindTrailInfo[0].velocity;
+
+        ResetRewindVariables();
+
+    }
+
+    public void Rewind()
+    {
+        if (ballRewindTrailInfo.Count>1) {
+            transform.position = ballRewindTrailInfo[0].position;
+            ballRewindTrailInfo.RemoveAt(0);
+        }
+
+
+    }
+
+    public void Record()
+    {
+        ballRewindTrailInfo.Insert(0, (transform.position, rb.velocity));
+    }
 }

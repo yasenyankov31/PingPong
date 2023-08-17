@@ -64,10 +64,10 @@
     <Compile Include="Assets\Scripts\NewScripts\PlayerInput.cs" />
     <Compile Include="Assets\Scripts\ServePoint.cs" />
     <Compile Include="Assets\Scripts\HitLogic.cs" />
-    <Compile Include="Assets\PaddleCollision.cs" />
+    <Compile Include="Assets\Scripts\PaddleCollision.cs" />
     <Compile Include="Assets\Scripts\NewScripts\PlayerMovement.cs" />
-    <Compile Include="Assets\Scripts\NewScripts\MovementChecker.cs" />
     <Compile Include="Assets\Scripts\BallScript.cs" />
+    <Compile Include="Assets\Scripts\TimeSphere.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

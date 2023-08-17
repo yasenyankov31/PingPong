@@ -11,10 +11,13 @@ public class PlayerMovement : MonoBehaviour
 {
 
     public float speed = 1f;
-    public float servePower = 25f;
     public float yAngle, xAngle;
+    public Vector2 forcePower = new(1.3f, 1.5f);
+    public Vector2 xAngles = new(27f, 18f);
+
     public float rotationSpeed = 20f;
     public float rotation_smoothing = 0.1f;
+    public float moveSpeed = 500f;
     public float yPosition;
 
     private Vector3 targetPosition;
@@ -22,18 +25,19 @@ public class PlayerMovement : MonoBehaviour
     public float paddleXDisctance, paddleZDisctance;
     public float paddleZStartingPos;
     [SerializeField] private float movment_smoothing = 0.1f;
-    [SerializeField] private float moveSpeed = 500f;
-    private float xRotation,r;
-    private float minX, minZ, maxX;
-    public float maxZ;
-    private PlayerInput input;
-    private PlayerActions actions;
-    
+    private float xRotation, r;
+    private float minX, maxX;
+    public float minZ,maxZ;
+    private PlayerInput playerInput;
+    private PlayerActions playerActions;
+    private float lastFrameTime;
+
 
     void Start()
     {
-        input = GetComponent<PlayerInput>();
-        actions=GetComponent<PlayerActions>();
+        lastFrameTime = Time.realtimeSinceStartup;
+        playerInput = GetComponent<PlayerInput>();
+        playerActions = GetComponent<PlayerActions>();
         minX = transform.position.x - paddleXDisctance;
         maxX = transform.position.x + paddleXDisctance;
 
@@ -44,11 +48,12 @@ public class PlayerMovement : MonoBehaviour
 
     public void Movement()
     {
+        // Compute the custom delta time
+        float customDeltaTime = Time.realtimeSinceStartup - lastFrameTime;
 
-        //yAngle = 15 * input.horizontalInput;
-
-        Vector3 inputMovement = new Vector3(input.MouseX, 0, input.MouseY);
-        targetPosition += inputMovement * moveSpeed * Time.deltaTime;
+        // Using customDeltaTime in place of Time.deltaTime
+        Vector3 inputMovement = new Vector3(playerInput.MouseX, 0, playerInput.MouseY);
+        targetPosition += inputMovement * moveSpeed * customDeltaTime;
 
         targetPosition.x = Mathf.Clamp(targetPosition.x, minX, maxX);
         targetPosition.y = yPosition;
@@ -57,15 +62,20 @@ public class PlayerMovement : MonoBehaviour
         xRotation = Remap(targetPosition.x, minX, maxX, -45f, 45f);
         RotatePaddle(-xRotation);
 
-        actions.servePoint.rotation = Quaternion.Euler(xAngle, yAngle, 0);
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref movement_velocity, movment_smoothing);
+        xAngle = Remap(targetPosition.z, minZ, maxZ, xAngles.x, xAngles.y);
+
+        playerActions.servicePower = Remap(targetPosition.z, minZ, maxZ, forcePower.x, forcePower.y);
+        playerActions.servePoint.rotation = Quaternion.Euler(xAngle, yAngle, 0);
+
+        transform.position = targetPosition;
+
+        // Update the lastFrameTime for the next frame
+        lastFrameTime = Time.realtimeSinceStartup;
     }
 
     private void RotatePaddle(float zAngle)
     {
-        zAngle = Mathf.SmoothDampAngle(transform.eulerAngles.z, zAngle, ref r, 0.1f);
-
-
+        //zAngle = Mathf.SmoothDampAngle(transform.eulerAngles.z, zAngle, ref r, 0.1f);
         transform.rotation = Quaternion.Euler(0, yAngle, zAngle);
     }
 
