@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -71,7 +72,15 @@ public class BallScript : MonoBehaviour
     {
         if (collision.collider.CompareTag("Ground"))
         {
-            ResetGame();
+            var other_balls = FindObjectsOfType<BallScript>();
+            if (other_balls.Length > 1)
+            {
+                Destroy(this.gameObject);
+            }
+            else {
+                ResetGame();
+            }
+            
         }
         if (collision.collider.CompareTag("Paddle"))
         {
@@ -118,7 +127,10 @@ public class BallScript : MonoBehaviour
     {
         rb.isKinematic = false;
         isRewinding = false;
-        rb.velocity = ballRewindTrailInfo[0].velocity;
+        if (ballRewindTrailInfo.Count>0) {
+            rb.velocity = ballRewindTrailInfo[0].velocity;
+        }
+        
 
         ResetRewindVariables();
 
