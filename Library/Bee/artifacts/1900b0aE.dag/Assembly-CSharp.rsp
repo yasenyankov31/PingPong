@@ -372,6 +372,7 @@
 "Assets/Scripts/PlayerMovement.cs"
 "Assets/Scripts/ServePoint.cs"
 "Assets/Scripts/TimeSphere.cs"
+"Assets/SlowTimeUI.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01_UGUI.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark02.cs"

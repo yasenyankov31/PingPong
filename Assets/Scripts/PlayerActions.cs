@@ -30,13 +30,15 @@ public class PlayerActions : MonoBehaviour
 
 
     public bool ballIsClose = false;
-    private bool isRewinding, isTimeSlowed, isTimeStoped;
+    private bool isRewinding, isTimeSlowed, isTimeStoped,isTimeSkiped;
     private int paddleSoundCounter;
     private Collider paddleCollider;
+    private SlowTimeUI slowTimeUI;
 
 
     void Start()
     {
+        slowTimeUI = FindAnyObjectByType<SlowTimeUI>();
         paddleCollider = GetComponent<Collider>();
         playerMovement = GetComponent<PlayerMovement>();
     }
@@ -95,6 +97,7 @@ public class PlayerActions : MonoBehaviour
         SlowTime();
         StopTime();
         MakeService();
+        SkipTime();
         if (!isTimeStoped)
         {
             RotatePaddleByPlayerInput();
@@ -156,11 +159,17 @@ public class PlayerActions : MonoBehaviour
             Time.timeScale = slowMomentum;
             if (!specialEffectSource.isPlaying)
             {
+                slowTimeUI.StartMovingPanelToStart();
                 isTimeSlowed = false;
                 Time.timeScale = 1f;
             }
+            else
+            {
+                slowTimeUI.StartMovingPanelToEnd();
+            }
 
         }
+
     }
     private void MakeService()
     {
@@ -187,6 +196,24 @@ public class PlayerActions : MonoBehaviour
             isPressed = false;
         }
     }
+    private void SkipTime() {
+        if (Input.GetKeyDown(KeyCode.F) && !isTimeSkiped)
+        {
+            PlaySpecialEffectSound(slowTimeClip, 1);
+            isTimeSkiped = true;
+        }
+        if (isTimeSkiped)
+        {
+            Time.timeScale = 2f;
+            if (!specialEffectSource.isPlaying)
+            {
+                isTimeSkiped = false;
+                Time.timeScale = 1f;
+            }
+
+        }
+    }
+
     public void InstantiateBall()
     {
         canServeaAgain = false;
