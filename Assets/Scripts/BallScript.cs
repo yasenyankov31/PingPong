@@ -20,6 +20,11 @@ public class BallScript : MonoBehaviour
     AudioSource audioSource;
     int audioClipElement = 0;
     int bounceCounter = 0;
+    MeshRenderer meshRenderer;
+    TrailRenderer trailRenderer;
+    [Header("Skip Time")]
+    public bool ballUntargetable;
+
 
     [Header("Rewind")]
     private bool isRewinding = false;
@@ -32,6 +37,8 @@ public class BallScript : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         ballRewindTrailInfo = new List<(Vector3 position, Vector3 velocity)>();
         audioSource = GetComponent<AudioSource>();
+        meshRenderer=GetComponent<MeshRenderer>();
+        trailRenderer = GetComponent<TrailRenderer>();
     }
     private void FixedUpdate()
     {
@@ -47,13 +54,16 @@ public class BallScript : MonoBehaviour
 
     private void PlaySoundOnCollision()
     {
-        if (audioClipElement == tableHitSounds.Length)
-        {
-            audioClipElement = 0;
+        if (!ballUntargetable) {
+            if (audioClipElement == tableHitSounds.Length)
+            {
+                audioClipElement = 0;
+            }
+            audioSource.clip = tableHitSounds[audioClipElement];
+            audioSource.Play();
+            audioClipElement++;
         }
-        audioSource.clip = tableHitSounds[audioClipElement];
-        audioSource.Play();
-        audioClipElement++;
+       
 
     }
     private void ResetGame()
@@ -67,7 +77,7 @@ public class BallScript : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-
+    
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.CompareTag("Ground"))
@@ -79,6 +89,7 @@ public class BallScript : MonoBehaviour
             }
             else {
                 ResetGame();
+                StopSkip();
             }
             
         }
@@ -95,6 +106,9 @@ public class BallScript : MonoBehaviour
         }
         if (collision.collider.CompareTag("Table"))
         {
+            if (ballUntargetable) {
+                StartCoroutine(StopBall());
+            }
             if (bounceCounter > 2)
             {
                 ResetGame();
@@ -108,6 +122,26 @@ public class BallScript : MonoBehaviour
         }
 
 
+    }
+
+    IEnumerator StopBall()
+    {
+        yield return new WaitForSeconds(0.5f);
+        StopSkip();
+    }
+
+    public void StartSkip() {
+        meshRenderer.enabled = false;
+        ballUntargetable = true;
+        trailRenderer.enabled = false;
+    }
+
+    public void StopSkip() {
+        Time.timeScale = 1.0f;
+        meshRenderer.enabled = true;
+        trailRenderer.enabled = true;
+        ballUntargetable = false;
+        FindObjectOfType<PlayerActions>().isTimeSkiped = false;
     }
 
     public void ResetRewindVariables()

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -24,21 +25,25 @@ public class PlayerActions : MonoBehaviour
     public AudioClip slowTimeClip;
     public AudioClip[] stopTimeClips;
     public AudioClip[] paddleHitClips;
+    public AudioClip skipTimeClip;
     public GameObject rewindScreen;
     public VideoPlayer videoPlayer;
     public TimeSphere timeSphere;
 
 
     public bool ballIsClose = false;
-    private bool isRewinding, isTimeSlowed, isTimeStoped,isTimeSkiped;
+    private bool isRewinding, isTimeSlowed, isTimeStoped;
+    public bool isTimeSkiped;
     private int paddleSoundCounter;
     private Collider paddleCollider;
     private SlowTimeUI slowTimeUI;
+    private SkipSliderAnimation sliderBar;
 
 
     void Start()
     {
         slowTimeUI = FindAnyObjectByType<SlowTimeUI>();
+        sliderBar = FindAnyObjectByType<SkipSliderAnimation>();
         paddleCollider = GetComponent<Collider>();
         playerMovement = GetComponent<PlayerMovement>();
     }
@@ -199,16 +204,16 @@ public class PlayerActions : MonoBehaviour
     private void SkipTime() {
         if (Input.GetKeyDown(KeyCode.F) && !isTimeSkiped)
         {
-            PlaySpecialEffectSound(slowTimeClip, 1);
-            isTimeSkiped = true;
-        }
-        if (isTimeSkiped)
-        {
-            Time.timeScale = 2f;
-            if (!specialEffectSource.isPlaying)
+
+            BallScript ball = FindObjectOfType<BallScript>();
+            if (ball != null)
             {
-                isTimeSkiped = false;
-                Time.timeScale = 1f;
+                PlaySpecialEffectSound(skipTimeClip,1);
+                sliderBar.SlideCanvas();
+                ball.StartSkip();
+                ball.ballUntargetable = true;
+                isTimeSkiped = true;
+                Time.timeScale = 10f;
             }
 
         }
